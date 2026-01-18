@@ -6,7 +6,9 @@
   "mixins": [
     "CraftingCpuSubmitMixin",
     "MekanismCrafterMixin",
-    "tomscraftingmixin"
+    "tomscraftingmixin",
+    "ae2craftingtermmixin",
+    "AEBaseAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

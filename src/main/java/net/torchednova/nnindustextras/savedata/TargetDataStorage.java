@@ -5,6 +5,7 @@ import com.google.common.reflect.TypeToken;
 import net.minecraft.server.MinecraftServer;
 import net.torchednova.nnindustextras.referrals.Gives;
 import net.torchednova.nnindustextras.referrals.GivesManager;
+import net.torchednova.nnindustextras.referrals.Referral;
 import net.torchednova.nnindustextras.referrals.ReferralManager;
 
 import java.io.IOException;
@@ -17,13 +18,13 @@ import java.util.List;
 
 public class TargetDataStorage {
 
-    private static final Type LIST_TYPE = new TypeToken<List<Integer>>() {}.getType();
+    private static final Type LIST_TYPE = new TypeToken<List<Referral>>() {}.getType();
     private static final Type LIST_TYPE_GIVES = new TypeToken<List<Gives>>() {}.getType();
 
     public static void save(MinecraftServer server)
     {
         try{
-            Path file = ModDataPath.getLadderDataFile(server);
+            Path file = ModDataPath.getReferralDataFile(server);
 
             Path parent = file.getParent();
             if (parent != null) {
@@ -39,19 +40,19 @@ public class TargetDataStorage {
         }
     }
 
-    public static ArrayList<Integer> load(MinecraftServer server)
+    public static ArrayList<Referral> load(MinecraftServer server)
     {
         try{
-            Path file = ModDataPath.getLadderDataFile(server);
+            Path file = ModDataPath.getReferralDataFile(server);
 
             if (Files.exists(file) == false)
             {
-                return new ArrayList<Integer>();
+                return new ArrayList<Referral>();
             }
 
             String json = Files.readString(file);
 
-            ArrayList<Integer> data = ModJson.GSON.fromJson(json, LIST_TYPE);
+            ArrayList<Referral> data = ModJson.GSON.fromJson(json, LIST_TYPE);
 
             return data != null ? data : new ArrayList<>();
 
@@ -92,7 +93,7 @@ public class TargetDataStorage {
 
             String json = Files.readString(file);
 
-            ArrayList<Gives> data = ModJson.GSON.fromJson(json, LIST_TYPE);
+            ArrayList<Gives> data = ModJson.GSON.fromJson(json, LIST_TYPE_GIVES);
 
             return data != null ? data : new ArrayList<>();
 

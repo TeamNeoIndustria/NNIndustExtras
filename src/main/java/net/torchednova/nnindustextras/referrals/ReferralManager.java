@@ -1,6 +1,8 @@
 package net.torchednova.nnindustextras.referrals;
 
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.Entity;
+import net.torchednova.nnindustextras.savedata.TargetDataStorage;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -9,9 +11,9 @@ import java.util.UUID;
 public class ReferralManager {
     public static ArrayList<Referral> rs;
 
-    public static void init()
+    public static void init(MinecraftServer server)
     {
-        rs = new ArrayList<>();
+        rs = TargetDataStorage.load(server);
 
     }
 
@@ -30,9 +32,23 @@ public class ReferralManager {
 
     }
 
+    public static void banUser(String name)
+    {
+        for (int i = 0; i < rs.size(); i++)
+        {
+            if (Objects.equals(rs.get(i).name, name))
+            {
+                rs.get(i).banned = true;
+            }
+        }
+    }
+
+
     public static String newReferrer(Entity player)
     {
         rs.add(new Referral(rs.size(), player.getUUID(), player.getScoreboardName(), -1));
+
+        TargetDataStorage.save(player.getServer());
 
         return rs.getLast().code;
     }
@@ -41,17 +57,17 @@ public class ReferralManager {
     {
 
         Referral rf = getReferral(code);
-        if(rf == null)
+        if(rf == null || rf.banned == true)
         {
             return false;
         }
         Referral ry = getReferral(player.getUUID());
-        if (ry != null)
+        if (ry != null || ry.banned == true)
         {
             return false;
         }
         ry = newReffered(player, rf.id);
-        if (ry == null)
+        if (ry == null || ry.banned == true)
         {
             return false;
         }
@@ -62,6 +78,35 @@ public class ReferralManager {
 
 
     }
+
+    public static boolean delReferral(String code)
+    {
+        for (int i = 0; i < rs.size(); i++)
+        {
+            if (Objects.equals(rs.get(i).code, code))
+            {
+                rs.remove(i);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static boolean delReferralName(String name)
+    {
+        for (int i = 0; i < rs.size(); i++)
+        {
+            if (Objects.equals(rs.get(i).name, name))
+            {
+                rs.remove(i);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 
     public static Referral newReffered(Entity player, int referredBy)
     {
@@ -76,6 +121,7 @@ public class ReferralManager {
         {
             if (Objects.equals(rs.get(i).code, code))
             {
+                if (rs.get(i).banned == true) return null;
                 return rs.get(i);
             }
         }

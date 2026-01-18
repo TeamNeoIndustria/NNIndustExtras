@@ -10,7 +10,10 @@ public class Referral {
         this.name = name;
         this.uuid = uuid;
         this.referredBy = referredBy;
-        this.code = String.valueOf((int)(Math.random() * 1000000));
+        do {
+            this.code = String.valueOf((int) (Math.random() * 1000000));
+        } while (ReferralManager.getReferral(this.code) != null);
+        this.referred = new ArrayList<>();
     }
 
     public int id;
@@ -19,4 +22,5 @@ public class Referral {
     public String code;
     public int referredBy;
     public ArrayList<Integer> referred;
+    public boolean banned = false;
 }

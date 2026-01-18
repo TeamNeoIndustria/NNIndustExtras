@@ -8,10 +8,13 @@ import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
+import net.torchednova.nnindustextras.commands.adminrefer;
 import net.torchednova.nnindustextras.commands.refer;
 import net.torchednova.nnindustextras.referrals.GivesManager;
 import net.torchednova.nnindustextras.referrals.Referral;
 import net.torchednova.nnindustextras.referrals.ReferralManager;
+import net.torchednova.nnindustextras.savedata.TargetDataStorage;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -81,7 +84,7 @@ public class NNIndustExtras {
     private void commonSetup(FMLCommonSetupEvent event) {
         // Some common setup code
         LOGGER.info("HELLO FROM COMMON SETUP");
-        ReferralManager.init();
+
 
     }
 
@@ -94,12 +97,22 @@ public class NNIndustExtras {
     public void onServerStarting(ServerStartingEvent event) {
         LOGGER.info("HELLO from server starting");
         GivesManager.init(event.getServer());
+        ReferralManager.init(event.getServer());
     }
+
+    @SubscribeEvent
+    public void onServerStopping(ServerStoppingEvent event)
+    {
+        TargetDataStorage.save(event.getServer());
+        TargetDataStorage.saveGives(event.getServer());
+    }
+
 
     @SubscribeEvent
     public void onRegisterCommands(RegisterCommandsEvent event)
     {
         refer.register(event.getDispatcher());
+        adminrefer.register(event.getDispatcher());
     }
 
     @SubscribeEvent

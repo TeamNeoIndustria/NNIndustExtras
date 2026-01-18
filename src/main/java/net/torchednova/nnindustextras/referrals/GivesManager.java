@@ -42,7 +42,8 @@ public class GivesManager {
                 gs.remove(i);
 
                 TargetDataStorage.saveGives(p.getServer());
-                break;
+
+                return;
             }
         }
     }
