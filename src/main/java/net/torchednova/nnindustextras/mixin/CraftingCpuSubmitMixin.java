@@ -23,7 +23,7 @@ import net.torchednova.nnindustextras.ItemsStageController;
 
 import static net.torchednova.nnindustextras.NNIndustExtras.LOGGER;
 
-// ⚠️ Replace this with the ACTUAL class that contains trySubmitJob
+
 //appeng.crafting.execution.CraftingCpuLogic
 @Mixin(appeng.crafting.execution.CraftingCpuLogic.class)
 class CraftingCpuSubmitMixin {

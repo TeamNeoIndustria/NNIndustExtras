@@ -8,7 +8,8 @@
     "MekanismCrafterMixin",
     "tomscraftingmixin",
     "ae2craftingtermmixin",
-    "AEBaseAccessor"
+    "AEBaseAccessor",
+    "ae2BlockInserts"
   ],
   "injectors": {
     "defaultRequire": 1
