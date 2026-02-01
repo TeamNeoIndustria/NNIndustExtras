@@ -31,22 +31,14 @@ public class ae2BlockInserts {
             IActionSource src,
             CallbackInfoReturnable<Long> cir
     ){
-        System.out.print("here1");
-
-        System.out.print("here2");
-
-        System.out.print("here3");
         String id = input.getId().toString();
 
-        System.out.print("here4");
 
         if (id.equals("numismatics:spur") || id.equals("numismatics:bevel") || id.equals("numismatics:sprocket")  || id.equals("numismatics:cog") || id.equals("numismatics:crown") || id.equals("numismatics:sun"))
         {
-            System.out.print("here5");
             cir.setReturnValue(0L);
             //cir.cancel();
         }
-        System.out.print("here6");
 
     }
 

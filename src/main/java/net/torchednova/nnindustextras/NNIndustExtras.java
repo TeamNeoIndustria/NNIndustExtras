@@ -10,6 +10,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.torchednova.nnindustextras.commands.adminrefer;
+import net.torchednova.nnindustextras.commands.coinflip;
 import net.torchednova.nnindustextras.commands.refer;
 import net.torchednova.nnindustextras.referrals.GivesManager;
 import net.torchednova.nnindustextras.referrals.Referral;
@@ -113,6 +114,7 @@ public class NNIndustExtras {
     {
         refer.register(event.getDispatcher());
         adminrefer.register(event.getDispatcher());
+        coinflip.register(event.getDispatcher());
     }
 
     @SubscribeEvent
