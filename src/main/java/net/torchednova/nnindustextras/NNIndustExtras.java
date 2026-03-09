@@ -235,8 +235,8 @@ public class NNIndustExtras {
         refer.register(event.getDispatcher());
         adminrefer.register(event.getDispatcher());
         coinflip.register(event.getDispatcher());
-        newkey.register(event.getDispatcher());
         NeoFreeze.register(event.getDispatcher());
+        neouuid.register(event.getDispatcher());
     }
 
     @SubscribeEvent
