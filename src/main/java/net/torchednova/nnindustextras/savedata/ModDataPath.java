@@ -13,4 +13,8 @@ public class ModDataPath {
         return server.getWorldPath(net.minecraft.world.level.storage.LevelResource.ROOT).resolve("data").resolve("nnindustextras").resolve("gives.json");
     }
 
+    public static Path getIRSKeyDataFile(MinecraftServer server) {
+        return server.getWorldPath(net.minecraft.world.level.storage.LevelResource.ROOT).resolve("data").resolve("nnindustextras").resolve("irs.json");
+    }
+
 }

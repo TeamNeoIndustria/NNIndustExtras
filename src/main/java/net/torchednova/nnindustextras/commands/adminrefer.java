@@ -19,7 +19,7 @@ import static net.torchednova.nnindustextras.NNIndustExtras.LOGGER;
 public class adminrefer {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(
-                Commands.literal("adminrefer").requires(source -> source.hasPermission(2))
+                Commands.literal("neoadminrefer").requires(source -> source.hasPermission(2))
                         // /referral get
                         .then(
                                 Commands.literal("getall")

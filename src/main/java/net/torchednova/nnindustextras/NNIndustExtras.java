@@ -2,16 +2,25 @@ package net.torchednova.nnindustextras;
 
 import com.alessandro.astages.capability.PlayerStage;
 import com.alessandro.astages.util.AStagesUtil;
+import net.minecraft.advancements.critereon.FilledBucketTrigger;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityEvent;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
-import net.torchednova.nnindustextras.commands.adminrefer;
-import net.torchednova.nnindustextras.commands.coinflip;
-import net.torchednova.nnindustextras.commands.refer;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.torchednova.nnindustextras.commands.*;
+import net.torchednova.nnindustextras.freeze.FreezePlayer;
+import net.torchednova.nnindustextras.irs.IRS;
 import net.torchednova.nnindustextras.referrals.GivesManager;
 import net.torchednova.nnindustextras.referrals.Referral;
 import net.torchednova.nnindustextras.referrals.ReferralManager;
@@ -69,7 +78,6 @@ public class NNIndustExtras {
         // Do not add this line if there are no @SubscribeEvent-annotated functions in this class, like onServerStarting() below.
         NeoForge.EVENT_BUS.register(this);
 
-        NeoForge.EVENT_BUS.addListener(WebSocketController::onServerStarting);
         NeoForge.EVENT_BUS.addListener(AEStageCheck::onPatternWrite);
 
         // Register the item to a creative tab
@@ -99,6 +107,8 @@ public class NNIndustExtras {
         LOGGER.info("HELLO from server starting");
         GivesManager.init(event.getServer());
         ReferralManager.init(event.getServer());
+        IRS.NeoIRSInit(TargetDataStorage.IRSload(event.getServer()));
+        FreezePlayer.init();
     }
 
     @SubscribeEvent
@@ -108,6 +118,116 @@ public class NNIndustExtras {
         TargetDataStorage.saveGives(event.getServer());
     }
 
+    @SubscribeEvent
+    public void onServerPostTick(ServerTickEvent.Post event)
+    {
+        if (event.getServer().getPlayerList().getPlayerCount() == 0) return;
+        if (FreezePlayer.frozen == null || FreezePlayer.frozen.isEmpty()) return;
+
+        ServerPlayer sp;
+        for (int i = 0; i < FreezePlayer.frozen.size(); i++)
+        {
+            sp = event.getServer().getPlayerList().getPlayer(FreezePlayer.frozen.get(i).player);
+
+            if (event.getServer().getPlayerList().getPlayers().contains(sp))
+            {
+                sp.teleportTo(FreezePlayer.frozen.get(i).sl, FreezePlayer.frozen.get(i).pos.x, FreezePlayer.frozen.get(i).pos.y, FreezePlayer.frozen.get(i).pos.z, sp.yHeadRot, sp.getXRot());
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onBlockBreak(BlockEvent.BreakEvent event)
+    {
+        if (FreezePlayer.frozen == null || FreezePlayer.frozen.isEmpty()) return;
+
+        if (event.getPlayer() instanceof Player player)
+        {
+            int pos = FreezePlayer.getPlayerIn(player.getUUID());
+            if (pos != -1)
+            {
+                event.setCanceled(true);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onBlockPlace(BlockEvent.EntityPlaceEvent event)
+    {
+        if (FreezePlayer.frozen == null || FreezePlayer.frozen.isEmpty()) return;
+
+        if (event.getEntity() instanceof Player player)
+        {
+            int pos = FreezePlayer.getPlayerIn(player.getUUID());
+            if (pos != -1)
+            {
+                event.setCanceled(true);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onMultiPlace(BlockEvent.EntityMultiPlaceEvent event)
+    {
+        if (FreezePlayer.frozen == null || FreezePlayer.frozen.isEmpty()) return;
+
+        if (event.getEntity() instanceof Player player)
+        {
+            int pos = FreezePlayer.getPlayerIn(player.getUUID());
+            if (pos != -1)
+            {
+                event.setCanceled(true);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onRightClickBlockPlace(PlayerInteractEvent.RightClickBlock  event)
+    {
+        if (FreezePlayer.frozen == null || FreezePlayer.frozen.isEmpty()) return;
+
+        if (event.getEntity() instanceof Player player)
+        {
+            int pos = FreezePlayer.getPlayerIn(player.getUUID());
+            if (pos != -1)
+            {
+                event.setCanceled(true);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onRightClickItemPlace(PlayerInteractEvent.RightClickItem  event)
+    {
+        if (FreezePlayer.frozen == null || FreezePlayer.frozen.isEmpty()) return;
+
+        if (event.getEntity() instanceof Player player)
+        {
+            int pos = FreezePlayer.getPlayerIn(player.getUUID());
+            if (pos != -1)
+            {
+                event.setCanceled(true);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onEntityDamaged(LivingIncomingDamageEvent event)
+    {
+        if (FreezePlayer.frozen == null || FreezePlayer.frozen.isEmpty()) return;
+
+        if (event.getSource().getEntity() instanceof Player player)
+        {
+            int pos = FreezePlayer.getPlayerIn(player.getUUID());
+            if (pos != -1)
+            {
+                event.setCanceled(true);
+            }
+        }
+    }
+
+
+
 
     @SubscribeEvent
     public void onRegisterCommands(RegisterCommandsEvent event)
@@ -115,16 +235,13 @@ public class NNIndustExtras {
         refer.register(event.getDispatcher());
         adminrefer.register(event.getDispatcher());
         coinflip.register(event.getDispatcher());
+        newkey.register(event.getDispatcher());
+        NeoFreeze.register(event.getDispatcher());
     }
 
     @SubscribeEvent
     public void onPlayerLoggedInEvent(PlayerEvent.PlayerLoggedInEvent event)
     {
         GivesManager.onPlayerJoin(event.getEntity());
-    }
-
-    @SubscribeEvent
-    public void onBlockPlace(BlockEvent.EntityPlaceEvent event) {
-
     }
 }

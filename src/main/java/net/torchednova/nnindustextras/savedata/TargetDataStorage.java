@@ -3,6 +3,7 @@ package net.torchednova.nnindustextras.savedata;
 
 import com.google.common.reflect.TypeToken;
 import net.minecraft.server.MinecraftServer;
+import net.torchednova.nnindustextras.freeze.FreezePlayer;
 import net.torchednova.nnindustextras.referrals.Gives;
 import net.torchednova.nnindustextras.referrals.GivesManager;
 import net.torchednova.nnindustextras.referrals.Referral;
@@ -15,11 +16,15 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import static net.torchednova.nnindustextras.NNIndustExtras.LOGGER;
+
 
 public class TargetDataStorage {
 
     private static final Type LIST_TYPE = new TypeToken<List<Referral>>() {}.getType();
     private static final Type LIST_TYPE_GIVES = new TypeToken<List<Gives>>() {}.getType();
+    private static final Type TYPE_String = new TypeToken<String>() {}.getType();
+    private static final Type FREEZE_LIST_TYPE = new TypeToken<List<FreezePlayer>>() {}.getType();
 
     public static void save(MinecraftServer server)
     {
@@ -100,6 +105,47 @@ public class TargetDataStorage {
         } catch (IOException e) {
             e.printStackTrace();
             return new ArrayList<>();
+        }
+    }
+
+    public static void IRSsave(MinecraftServer server)
+    {
+        try{
+            Path file = ModDataPath.getIRSKeyDataFile(server);
+
+            Path parent = file.getParent();
+            if (parent != null) {
+                Files.createDirectories(parent);
+            }
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public static String IRSload(MinecraftServer server)
+    {
+        try{
+            Path file = ModDataPath.getIRSKeyDataFile(server);
+
+            if (Files.exists(file) == false)
+            {
+                //LOGGER.info("no file found");
+                IRSsave(server);
+            }
+
+            String json = Files.readString(file);
+
+            //LOGGER.info(json);
+
+            String data = ModJson.GSON.fromJson(json, TYPE_String);
+
+            return data != null ? data : "";
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
         }
     }
 

@@ -22,7 +22,7 @@ import java.util.Random;
 public class coinflip {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(
-                Commands.literal("coinflip").requires(source -> source.hasPermission(2))
+                Commands.literal("neocoinflip").requires(source -> source.hasPermission(2))
                         .then(Commands.argument("value", IntegerArgumentType.integer())
                                 .then(Commands.argument("side", BoolArgumentType.bool())
                                 .then(Commands.argument("chance", IntegerArgumentType.integer())
