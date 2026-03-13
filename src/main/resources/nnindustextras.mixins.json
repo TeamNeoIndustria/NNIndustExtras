@@ -9,7 +9,8 @@
     "tomscraftingmixin",
     "ae2craftingtermmixin",
     "AEBaseAccessor",
-    "ae2BlockInserts"
+    "ae2BlockInserts",
+    "immersivepaintingmixin"
   ],
   "injectors": {
     "defaultRequire": 1

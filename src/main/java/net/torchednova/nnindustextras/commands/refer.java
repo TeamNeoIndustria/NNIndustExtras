@@ -29,7 +29,6 @@ public class refer {
                                             return 1;
                                         })
                         )
-
                         // /referral enter <code>
                         .then(
                                 Commands.literal("enter")

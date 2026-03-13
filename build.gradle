@@ -149,6 +149,9 @@ dependencies {
     //toms
     implementation files("libs/toms_storage-1.21-2.2.4.jar")
 
+    //immserive paintings
+    implementation files("libs/immersive_paintings-0.6.8.jar")
+
     //mixin shizz
     implementation "org.spongepowered:mixin:0.8.5"
 }

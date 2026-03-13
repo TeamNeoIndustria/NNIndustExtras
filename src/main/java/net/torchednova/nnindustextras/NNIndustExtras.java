@@ -1,48 +1,24 @@
 package net.torchednova.nnindustextras;
 
-import com.alessandro.astages.capability.PlayerStage;
-import com.alessandro.astages.util.AStagesUtil;
-import net.minecraft.advancements.critereon.FilledBucketTrigger;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityEvent;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.torchednova.nnindustextras.commands.*;
 import net.torchednova.nnindustextras.freeze.FreezePlayer;
-import net.torchednova.nnindustextras.irs.IRS;
 import net.torchednova.nnindustextras.referrals.GivesManager;
-import net.torchednova.nnindustextras.referrals.Referral;
 import net.torchednova.nnindustextras.referrals.ReferralManager;
 import net.torchednova.nnindustextras.savedata.TargetDataStorage;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
 
-import net.torchednova.nnindustextras.ItemsStageController;
-
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
@@ -52,13 +28,6 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
-import net.neoforged.neoforge.registries.DeferredBlock;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
-import com.simibubi.create.AllItems;
-
-import java.beans.EventHandler;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(NNIndustExtras.MODID)
@@ -93,8 +62,6 @@ public class NNIndustExtras {
     private void commonSetup(FMLCommonSetupEvent event) {
         // Some common setup code
         LOGGER.info("HELLO FROM COMMON SETUP");
-
-
     }
 
     // Add the example block item to the building blocks tab
@@ -107,7 +74,6 @@ public class NNIndustExtras {
         LOGGER.info("HELLO from server starting");
         GivesManager.init(event.getServer());
         ReferralManager.init(event.getServer());
-        IRS.NeoIRSInit(TargetDataStorage.IRSload(event.getServer()));
         FreezePlayer.init();
     }
 
@@ -135,6 +101,7 @@ public class NNIndustExtras {
             }
         }
     }
+
 
     @SubscribeEvent
     public void onBlockBreak(BlockEvent.BreakEvent event)

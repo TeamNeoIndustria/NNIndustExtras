@@ -1,24 +1,14 @@
 package net.torchednova.nnindustextras.commands;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.torchednova.nnindustextras.freeze.FreezePlayer;
-import net.torchednova.nnindustextras.irs.IRS;
-
-import javax.naming.directory.Attribute;
 
 public class NeoFreeze {
 	public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
