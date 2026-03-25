@@ -3,6 +3,7 @@ package net.torchednova.nnindustextras.mixin;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -43,35 +44,24 @@ public abstract class immersivepaintingmixin {
 		if (owner.isEmpty())
 		{
 			owner = player.getStringUUID();
-			LOGGER.info("new owner");
 		}
-		if (owner.isEmpty() && !owner.equals(player.getStringUUID()))
+		if (!owner.isEmpty() && !owner.equals(player.getStringUUID()) && !player.hasPermissions(2))
 		{
-			LOGGER.info("Canceled");
+			cir.setReturnValue(InteractionResult.FAIL);
 			cir.cancel();
 		}
-
-		LOGGER.info("Okay go ahead");
 	}
 
 	@Inject(method = "addAdditionalSaveData", at = @At("HEAD"))
 	private void saveOwner(CompoundTag tag, CallbackInfo ci) {
-		LOGGER.info("adding");
 		if (owner != null) {
-			LOGGER.info("adding2");
 			tag.putString("Owner", owner);
 		}
 	}
 
 	@Inject(method = "readAdditionalSaveData", at = @At("HEAD"))
 	private void loadOwner(CompoundTag tag, CallbackInfo ci) {
-		LOGGER.info("loadingshizzle");
 		owner = tag.getString("Owner");
-		LOGGER.info(tag.getString("Owner") + "KEYTOFIND");
-		if (tag.hasUUID("Owner")) {
-			LOGGER.info("loadingshizzle2");
-
-		}
 	}
 
 

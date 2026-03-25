@@ -1,12 +1,37 @@
 package net.torchednova.nnindustextras;
 
+import com.simibubi.create.AllBlockEntityTypes;
+import com.simibubi.create.content.kinetics.crafter.MechanicalCrafterBlockEntity;
+import dev.ftb.mods.ftbchunks.FTBChunks;
+import dev.ftb.mods.ftbchunks.api.ChunkTeamData;
+import dev.ftb.mods.ftbchunks.api.ClaimedChunk;
+import dev.ftb.mods.ftbchunks.api.FTBChunksAPI;
+import dev.ftb.mods.ftblibrary.math.ChunkDimPos;
+import dev.ftb.mods.ftbteams.api.FTBTeamsAPI;
+import dev.ftb.mods.ftbteams.api.Team;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
@@ -29,6 +54,8 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
+import java.util.Optional;
+
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(NNIndustExtras.MODID)
 public class NNIndustExtras {
@@ -36,6 +63,16 @@ public class NNIndustExtras {
     public static final String MODID = "nnindustextras";
     // Directly reference a slf4j logger
     public static final Logger LOGGER = LogUtils.getLogger();
+
+    private static MinecraftServer server;
+
+    public static MinecraftServer getServer()
+    {
+        return server;
+    }
+
+    private static TagKey<Block> crafter =
+        TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("create", "mechanical_crafter"));
     // The constructor for the mod class is the first code that is run when your mod is loaded.
     // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
     public NNIndustExtras(IEventBus modEventBus, ModContainer modContainer) {
@@ -75,6 +112,7 @@ public class NNIndustExtras {
         GivesManager.init(event.getServer());
         ReferralManager.init(event.getServer());
         FreezePlayer.init();
+        this.server = event.getServer();
     }
 
     @SubscribeEvent
@@ -134,6 +172,61 @@ public class NNIndustExtras {
     }
 
     @SubscribeEvent
+    public void onBlockPlaced(BlockEvent.EntityPlaceEvent event) {
+        if(!(event.getEntity() instanceof ServerPlayer player)) return;
+        if(!event.getPlacedBlock().getBlock().builtInRegistryHolder().getKey().location().toString().equals("create:mechanical_crafter")) {
+            return;
+        }
+        if (((ServerPlayer) event.getEntity()).gameMode.isCreative()) return;
+
+        Level level = (Level)event.getLevel();
+        if (level.isClientSide()) return;
+
+        BlockPos pos = event.getPos();
+        ChunkPos chunkpos = new ChunkPos(pos);
+
+        Team playerTeam = FTBTeamsAPI.api().getManager().getTeamForPlayer(player).get();
+
+        ChunkDimPos chunkDimPos = new ChunkDimPos(level.dimension(), chunkpos);
+        if (chunkDimPos == null) return;
+
+        ClaimedChunk chunkTeam = FTBChunksAPI.api().getManager().getChunk(chunkDimPos);
+
+        if (chunkTeam == null) {
+            event.setCanceled(true);
+            player.displayClientMessage(
+                Component.literal("You can only place this block in your team's claimed chunks!"),
+                true
+            );
+            return;
+        }
+
+        Team team = chunkTeam.getTeamData().getTeam();
+
+        if (!playerTeam.equals(team))
+        {
+            event.setCanceled(true);
+            player.displayClientMessage(
+                Component.literal("You can only place this block in your team's claimed chunks!"),
+                true
+            );
+            return;
+        }
+
+        BlockEntity be = level.getBlockEntity(event.getPos());
+        CompoundTag ct = new CompoundTag();
+        ct.putString("Owner", event.getEntity().getStringUUID());
+        if (be instanceof ownertracker mcbe)
+        {
+            mcbe.nnindust$setOwner(event.getEntity().getStringUUID());
+            mcbe.nnindust$setPos(event.getPos());
+            mcbe.nnindust$setLevel(event.getEntity().level().dimension());
+        }
+        be.setChanged();
+
+    }
+
+        @SubscribeEvent
     public void onMultiPlace(BlockEvent.EntityMultiPlaceEvent event)
     {
         if (FreezePlayer.frozen == null || FreezePlayer.frozen.isEmpty()) return;
@@ -192,7 +285,6 @@ public class NNIndustExtras {
             }
         }
     }
-
 
 
 

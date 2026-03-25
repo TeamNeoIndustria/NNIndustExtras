@@ -27,6 +27,7 @@ public class ItemsStageController {
     public static Boolean unlocked(String item, Player ent)
     {
         PlayerStage ps = new PlayerStage(ent);
+
         String stage = "";
 
         if (ItemStages.get("mek_basic").contains(item)) {

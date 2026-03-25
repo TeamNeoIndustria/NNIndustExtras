@@ -10,7 +10,9 @@
     "ae2craftingtermmixin",
     "AEBaseAccessor",
     "ae2BlockInserts",
-    "immersivepaintingmixin"
+    "immersivepaintingmixin",
+    "mechanicalcraftermixin",
+    "gridmixin"
   ],
   "injectors": {
     "defaultRequire": 1

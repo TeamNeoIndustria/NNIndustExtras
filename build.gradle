@@ -152,6 +152,12 @@ dependencies {
     //immserive paintings
     implementation files("libs/immersive_paintings-0.6.8.jar")
 
+    //FTB shizz
+    implementation files("libs/ftb-chunks-neoforge-2101.1.13.jar")
+    implementation files("libs/ftb-teams-neoforge-2101.1.9.jar")
+    implementation files("libs/ftb-library-neoforge-2101.1.30.jar")
+
+
     //mixin shizz
     implementation "org.spongepowered:mixin:0.8.5"
 }
