@@ -15,6 +15,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.torchednova.nnindustextras.NNIndustExtras;
 import net.torchednova.nnindustextras.referrals.ReferralManager;
 
 import java.util.Random;
@@ -38,19 +39,28 @@ public class coinflip {
 
                                  ServerPlayer sp = context.getSource().getServer().getPlayerList().getPlayerByName(playername);
 
-                                 Item mons = BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("numismatics","spur"));
+                                 Item mons = BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("neobanking","wooden_coin"));
                                  ItemStack is = new ItemStack(mons, amount);
+
+                                    //NNIndustExtras.LOGGER.info(String.valueOf(sp.getInventory().findSlotMatchingItem(is)) + "------------------------------------");
+
+                                    CommandSourceStack source = sp.createCommandSourceStack();
+
+                                 if (sp == null || sp.getInventory().findSlotMatchingItem(is) == -1)
+                                 {
+                                     source.sendSuccess(() ->
+                                     Component.literal("Comeback when you have wooden coins"),
+                                         false
+                                     );
+                                     return 1;
+                                 }
 
                                  if (!(sp.getInventory().getItem(sp.getInventory().findSlotMatchingItem(is)).getCount() >= amount))
                                  {
-                                     PlayerChatMessage chatMessage = PlayerChatMessage.unsigned(
-                                             sp.getUUID(),
-                                             "Come back when you have more spurs to gamble!"
+                                     source.sendSuccess(() ->
+                                             Component.literal("Comeback when you have more coins to gamble"),
+                                         false
                                      );
-                                     CommandSourceStack source = sp.createCommandSourceStack();
-                                     source.sendChatMessage(new OutgoingChatMessage.Player(chatMessage),
-                                             false,
-                                             ChatType.bind(ChatType.CHAT, sp));
                                      return 1;
                                  }
 
@@ -59,27 +69,19 @@ public class coinflip {
                                  int result = rand.nextInt(100);
                                  if ((side == true && result > (100 - chance)) || (side == false && result < chance))
                                  {
-                                     PlayerChatMessage chatMessage = PlayerChatMessage.unsigned(
-                                             sp.getUUID(),
-                                             "You won!"
+                                     source.sendSuccess(() ->
+                                             Component.literal("You Won!"),
+                                         false
                                      );
-                                     CommandSourceStack source = sp.createCommandSourceStack();
-                                     source.sendChatMessage(new OutgoingChatMessage.Player(chatMessage),
-                                             false,
-                                             ChatType.bind(ChatType.CHAT, sp));
                                      is = new ItemStack(mons, amount * 2);
                                      sp.getInventory().add(is);
                                  }
                                  else
                                  {
-                                     PlayerChatMessage chatMessage = PlayerChatMessage.unsigned(
-                                             sp.getUUID(),
-                                             "You Lost better luck next time!"
+                                     source.sendSuccess(() ->
+                                             Component.literal("You Lost, Better luck next time"),
+                                         false
                                      );
-                                     CommandSourceStack source = sp.createCommandSourceStack();
-                                     source.sendChatMessage(new OutgoingChatMessage.Player(chatMessage),
-                                             false,
-                                             ChatType.bind(ChatType.CHAT, sp));
                                  }
 
                                     return 1;
