@@ -35,6 +35,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.torchednova.nnindustextras.Players.PlayerInfoController;
 import net.torchednova.nnindustextras.commands.*;
 import net.torchednova.nnindustextras.freeze.FreezePlayer;
 import net.torchednova.nnindustextras.referrals.GivesManager;
@@ -112,6 +113,7 @@ public class NNIndustExtras {
         GivesManager.init(event.getServer());
         ReferralManager.init(event.getServer());
         FreezePlayer.init();
+        PlayerInfoController.init(event.getServer());
         this.server = event.getServer();
     }
 
@@ -120,6 +122,7 @@ public class NNIndustExtras {
     {
         TargetDataStorage.save(event.getServer());
         TargetDataStorage.saveGives(event.getServer());
+        TargetDataStorage.PlayerSave(event.getServer());
     }
 
     @SubscribeEvent
@@ -296,11 +299,16 @@ public class NNIndustExtras {
         coinflip.register(event.getDispatcher());
         NeoFreeze.register(event.getDispatcher());
         neouuid.register(event.getDispatcher());
+        BuyStore.register(event.getDispatcher());
+        StoreManagement.register(event.getDispatcher());
     }
 
     @SubscribeEvent
     public void onPlayerLoggedInEvent(PlayerEvent.PlayerLoggedInEvent event)
     {
         GivesManager.onPlayerJoin(event.getEntity());
+        PlayerInfoController.checkIfChangedName(event.getEntity());
+        PlayerInfoController.checkIfStoreTimedOut(event.getEntity());
+
     }
 }

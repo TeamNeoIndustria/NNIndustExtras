@@ -3,6 +3,8 @@ package net.torchednova.nnindustextras.savedata;
 
 import com.google.common.reflect.TypeToken;
 import net.minecraft.server.MinecraftServer;
+import net.torchednova.nnindustextras.Players.PlayerInfo;
+import net.torchednova.nnindustextras.Players.PlayerInfoController;
 import net.torchednova.nnindustextras.freeze.FreezePlayer;
 import net.torchednova.nnindustextras.referrals.Gives;
 import net.torchednova.nnindustextras.referrals.GivesManager;
@@ -24,7 +26,7 @@ public class TargetDataStorage {
     private static final Type LIST_TYPE = new TypeToken<List<Referral>>() {}.getType();
     private static final Type LIST_TYPE_GIVES = new TypeToken<List<Gives>>() {}.getType();
     private static final Type TYPE_String = new TypeToken<String>() {}.getType();
-    private static final Type FREEZE_LIST_TYPE = new TypeToken<List<FreezePlayer>>() {}.getType();
+    private static final Type TYPE_LIST_PI = new TypeToken<List<PlayerInfo>>() {}.getType();
 
     public static void save(MinecraftServer server)
     {
@@ -146,6 +148,50 @@ public class TargetDataStorage {
         } catch (IOException e) {
             e.printStackTrace();
             return "";
+        }
+    }
+
+    public static void PlayerSave(MinecraftServer server)
+    {
+        try{
+            Path file = ModDataPath.getPlayerDataFile(server);
+
+            Path parent = file.getParent();
+            if (parent != null) {
+                Files.createDirectories(parent);
+            }
+
+            String json = ModJson.GSON.toJson(PlayerInfoController.Players);
+            Files.writeString(file, json);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public static ArrayList<PlayerInfo> PlayerLoad(MinecraftServer server)
+    {
+        try{
+            Path file = ModDataPath.getPlayerDataFile(server);
+
+            if (Files.exists(file) == false)
+            {
+                //LOGGER.info("no file found");
+                PlayerSave(server);
+            }
+
+            String json = Files.readString(file);
+
+            //LOGGER.info(json);
+
+            ArrayList<PlayerInfo> data = ModJson.GSON.fromJson(json, TYPE_LIST_PI);
+
+            return data != null ? data : new ArrayList<PlayerInfo>();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ArrayList<PlayerInfo>();
         }
     }
 
