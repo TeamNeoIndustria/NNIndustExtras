@@ -155,6 +155,9 @@ dependencies {
     //NeoLib
     implementation files("libs/neolib-1.0.0.jar")
 
+    //NeoLib
+    implementation files("libs/neobanking-1.0.0.jar")
+
     //FTB shizz
     implementation files("libs/ftb-chunks-neoforge-2101.1.13.jar")
     implementation files("libs/ftb-teams-neoforge-2101.1.9.jar")
